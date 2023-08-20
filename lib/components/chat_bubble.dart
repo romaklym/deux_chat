@@ -13,7 +13,7 @@ class ChatBubble extends StatelessWidget {
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: Colors.blue,
+        color: Colors.deepPurple,
       ),
       child: Text(message,
           style: const TextStyle(

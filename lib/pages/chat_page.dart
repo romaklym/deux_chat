@@ -4,6 +4,7 @@ import 'package:deux_chat/components/my_text_field.dart';
 import 'package:deux_chat/services/chat/chat_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ChatPage extends StatefulWidget {
   final String receiverUserEmail;
@@ -41,7 +42,12 @@ class _ChatPageState extends State<ChatPage> {
       appBar: AppBar(
         title: Text(
           widget.receiverUserEmail,
+          style: GoogleFonts.getFont('Roboto',
+              fontSize: 20, fontWeight: FontWeight.bold),
         ),
+        centerTitle: true,
+        backgroundColor: Colors.deepPurple,
+        elevation: 4,
       ),
       body: Column(
         children: [

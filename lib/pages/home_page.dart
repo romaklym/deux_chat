@@ -3,6 +3,7 @@ import 'package:deux_chat/pages/chat_page.dart';
 import 'package:deux_chat/services/auth/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -26,8 +27,17 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Home Page"),
+        title: Text(
+          _auth.currentUser?.email ?? 'Home Page',
+          style: GoogleFonts.getFont(
+            'Roboto',
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
+        backgroundColor: Colors.deepPurple, // Change background color
+        elevation: 4,
         actions: [
           // sign out button
           IconButton(

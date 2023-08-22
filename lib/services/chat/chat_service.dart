@@ -8,6 +8,55 @@ class ChatService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
+  // Send invitation
+  Future<void> sendInvitation(String receiverId) async {
+    final String currentUserId = _firebaseAuth.currentUser!.uid;
+    final Timestamp timestamp = Timestamp.now();
+
+    // Construct invitation object
+    Map<String, dynamic> invitationData = {
+      'senderId': currentUserId,
+      'receiverId': receiverId,
+      'timestamp': timestamp,
+      'accepted': false, // Invitation starts as not accepted
+    };
+
+    // Add invitation to the database
+    await _fireStore.collection('invitations').add(invitationData);
+  }
+
+  // Accept invitation and create chat room
+  Future<void> acceptInvitation(String invitationId) async {
+    final DocumentSnapshot invitationSnapshot =
+        await _fireStore.collection('invitations').doc(invitationId).get();
+
+    if (invitationSnapshot.exists) {
+      final Map<String, dynamic> invitationData =
+          invitationSnapshot.data() as Map<String, dynamic>;
+
+      if (invitationData['accepted'] == false) {
+        final String senderId = invitationData['senderId'];
+        final String receiverId = invitationData['receiverId'];
+
+        // Mark invitation as accepted
+        await _fireStore
+            .collection('invitations')
+            .doc(invitationId)
+            .update({'accepted': true});
+
+        // Create a chat room
+        List<String> ids = [senderId, receiverId];
+        ids.sort();
+        String chatRoomId = ids.join("_");
+
+        // Add users to the chat room
+        await _fireStore.collection('chat_rooms').doc(chatRoomId).set({
+          'users': [senderId, receiverId],
+        });
+      }
+    }
+  }
+
   // send message
   Future<void> sendMessage(String receiverId, String message) async {
     // get current user info

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 class ChatBubble extends StatelessWidget {
   final String message;
+  final Color bubbleColor;
   const ChatBubble({
     super.key,
     required this.message,
+    required this.bubbleColor,
   });
 
   @override
@@ -13,7 +15,7 @@ class ChatBubble extends StatelessWidget {
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: Colors.deepPurple,
+        color: bubbleColor,
       ),
       child: Text(message,
           style: const TextStyle(

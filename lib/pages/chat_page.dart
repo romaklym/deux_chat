@@ -86,10 +86,16 @@ class _ChatPageState extends State<ChatPage> {
   Widget _buildMessageItem(DocumentSnapshot document) {
     Map<String, dynamic> data = document.data() as Map<String, dynamic>;
 
+    bool isCurrentUser = data['senderId'] == _firebaseAuth.currentUser!.uid;
+    Color bubbleColor = isCurrentUser ? Colors.green : Colors.blue;
+
     // align the messages to the right if the sender is the current user, otherwise to the left
     var alignment = (data['senderId'] == _firebaseAuth.currentUser!.uid)
         ? Alignment.centerRight
         : Alignment.centerLeft;
+    // var color = (data['senderId'] == _firebaseAuth.currentUser!.uid)
+    //     ? Colors.green
+    //     : Colors.blue;
     return Container(
       alignment: alignment,
       child: Padding(
@@ -106,7 +112,7 @@ class _ChatPageState extends State<ChatPage> {
           children: [
             Text(data['senderEmail']),
             const SizedBox(height: 5.0),
-            ChatBubble(message: data['message']),
+            ChatBubble(message: data['message'], bubbleColor: bubbleColor),
           ],
         ),
       ),

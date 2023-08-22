@@ -1,10 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deux_chat/pages/chat_page.dart';
-import 'package:deux_chat/services/auth/auth_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:deux_chat/pages/accept_invite.dart';
+import 'package:deux_chat/pages/home_tab.dart';
+import 'package:deux_chat/pages/sent_invite.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,82 +11,53 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // instance of auth
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  //sign out function
-  void signOut() {
-    final authService = Provider.of<AuthService>(context, listen: false);
+  int _currentIndex = 0;
 
-    authService.signOut();
-  }
+  final List<Widget> _tabs = [
+    const HomeTab(),
+    const AcceptInvite(),
+    const SentInvite(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _auth.currentUser?.email ?? 'Home Page',
-          style: GoogleFonts.getFont(
-            'Roboto',
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+      body: _tabs[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.deepPurple,
+        unselectedItemColor: Colors.grey[600],
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+              color: Colors.deepPurple,
+            ),
+            label: 'Home',
           ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.deepPurple, // Change background color
-        elevation: 4,
-        actions: [
-          // sign out button
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: signOut,
-          )
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.check,
+              color: Colors.deepPurple,
+            ),
+            label: 'Accept Invitation',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.send,
+              color: Colors.deepPurple,
+            ),
+            label: 'Send Invitation',
+          ),
         ],
       ),
-      body: _buildUserList(),
     );
   }
 
-  //build the list of users
-  Widget _buildUserList() {
-    return StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('users').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Text('Error');
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text('Loading...');
-          }
-          return ListView(
-            children: snapshot.data!.docs
-                .map<Widget>((doc) => _buildUserListItem(doc))
-                .toList(),
-          );
-        });
-  }
-
-  Widget _buildUserListItem(DocumentSnapshot document) {
-    Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-
-    if (_auth.currentUser!.email != data['email']) {
-      return ListTile(
-        title: Text(data['email']),
-        onTap: () {
-          // navigate to chat page
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChatPage(
-                receiverUserEmail: data['email'],
-                receiverUserID: data['uid'],
-              ),
-            ),
-          );
-        },
-      );
-    } else {
-      return Container();
-    }
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
   }
 }
